@@ -28,7 +28,8 @@ class Database {
     
     private function connect() {
         try {
-            $dsn = "mysql:host={$this->host};dbname={$this->dbname};charset={$this->charset}";
+            // PostgreSQL connection string
+            $dsn = "pgsql:host={$this->host};dbname={$this->dbname};user={$this->user};password={$this->pass};port=5432";
             
             $options = [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
@@ -36,7 +37,7 @@ class Database {
                 PDO::ATTR_EMULATE_PREPARES => false,
             ];
             
-            $this->pdo = new PDO($dsn, $this->user, $this->pass, $options);
+            $this->pdo = new PDO($dsn);
             
         } catch (PDOException $e) {
             // Log error instead of showing to users
