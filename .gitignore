@@ -1,23 +1,5 @@
-# Dependencies
-/vendor/
-composer.lock
-
-# Environment
+# Environment variables
 .env
-.env.local
-.env.production
-
-# Logs
-logs/
-*.log
-
-# Uploads
-uploads/
-temp/
-
-# OS
-.DS_Store
-Thumbs.db
 
 # IDE
 .vscode/
@@ -25,6 +7,17 @@ Thumbs.db
 *.swp
 *.swo
 
-# Backup
-backup/
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Cache
+.cache/
+
+# Temporary files
+tmp/
+temp/
 *.bak
