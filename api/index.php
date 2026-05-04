@@ -51,7 +51,12 @@ try {
 // Parse request
 $method = $_SERVER['REQUEST_METHOD'];
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-$path = str_replace('/api', '', $path);
+
+// Remove /api prefix if present (for local development)
+if (strpos($path, '/api') === 0) {
+    $path = substr($path, 4);
+}
+
 $path = trim($path, '/');
 $pathParts = explode('/', $path);
 
@@ -119,6 +124,68 @@ function handleHealthCheck() {
 
 function handleProducts($method, $pathParts) {
     global $db;
+    
+    // For testing without database connection
+    if (!$db) {
+        // Return mock products for testing
+        $mockProducts = [
+            [
+                'id' => 1,
+                'name' => 'Classic White Shirt',
+                'description' => 'Premium cotton white shirt for formal occasions',
+                'price' => 1299.00,
+                'category_id' => 1,
+                'image' => '/assets/images/white-shirt.jpg',
+                'stock' => 50,
+                'status' => 'active',
+                'created_at' => '2024-05-01 10:00:00'
+            ],
+            [
+                'id' => 2,
+                'name' => 'Blue Denim Jeans',
+                'description' => 'Comfortable blue denim jeans with modern fit',
+                'price' => 2499.00,
+                'category_id' => 2,
+                'image' => '/assets/images/blue-jeans.jpg',
+                'stock' => 30,
+                'status' => 'active',
+                'created_at' => '2024-05-01 11:00:00'
+            ],
+            [
+                'id' => 3,
+                'name' => 'Black Leather Jacket',
+                'description' => 'Genuine leather jacket for stylish look',
+                'price' => 5999.00,
+                'category_id' => 3,
+                'image' => '/assets/images/black-jacket.jpg',
+                'stock' => 15,
+                'status' => 'active',
+                'created_at' => '2024-05-01 12:00:00'
+            ]
+        ];
+        
+        if (!empty($pathParts[1]) && is_numeric($pathParts[1])) {
+            // Get single product
+            $productId = $pathParts[1];
+            $product = null;
+            foreach ($mockProducts as $p) {
+                if ($p['id'] == $productId) {
+                    $product = $p;
+                    break;
+                }
+            }
+            if ($product) {
+                sendResponse($product);
+            } else {
+                sendResponse(null, 404, 'Product not found');
+            }
+        } else {
+            // Get all products
+            sendResponse($mockProducts);
+        }
+        return;
+    }
+    
     $products = new Products($db);
     
     switch ($method) {
@@ -171,6 +238,38 @@ function handleProducts($method, $pathParts) {
 
 function handleCategories($method) {
     global $db;
+    
+    // For testing without database connection
+    if (!$db) {
+        $mockCategories = [
+            [
+                'id' => 1,
+                'name' => 'Shirts',
+                'description' => 'Formal and casual shirts',
+                'product_count' => 15
+            ],
+            [
+                'id' => 2,
+                'name' => 'Jeans',
+                'description' => 'Denim jeans for all occasions',
+                'product_count' => 12
+            ],
+            [
+                'id' => 3,
+                'name' => 'Jackets',
+                'description' => 'Stylish jackets and coats',
+                'product_count' => 8
+            ]
+        ];
+        
+        if ($method === 'GET') {
+            sendResponse($mockCategories);
+        } else {
+            sendResponse(null, 405, 'Method not allowed');
+        }
+        return;
+    }
+    
     $products = new Products($db);
     
     if ($method === 'GET') {
